@@ -9,12 +9,13 @@ router.get('/', async function (req, res, next) {
     const accessToken = req.cookies[config.SPOTIFY_ACCESS_TOKEN]
     const refreshToken = req.cookies[config.SPOTIFY_REFRESH_TOKEN]
 
-    if (!accessToken || !refreshToken) {
-        res.render('index', {title: config.TITLE, loggedIn: false, message: 'not logged in'});
+    const userData = await getProfile(accessToken)
+
+    if (!accessToken || !refreshToken || userData.error) {
+        res.render('index', {title: config.TITLE, userData: false, message: 'not logged in'});
         return
     }
 
-    const userData = await getProfile(accessToken)
 
     /*
     //const tokenData = await getRefreshToken(refreshToken)
@@ -32,7 +33,8 @@ router.get('/', async function (req, res, next) {
     }
      */
 
-    res.render('index', {title: config.TITLE, loggedIn: true, message: JSON.stringify(userData)});
+
+    res.render('index', {title: config.TITLE, userData: userData,});
 
 });
 

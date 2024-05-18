@@ -1,14 +1,15 @@
 extends layout
 
 block content
-  h1= title
+    h1= title
 
-  if loggedIn
-    p You are logged In
-  else
-    a(href= "/login") Login
+    if !userData
+        a(href= "/login") Login
+    else
+        p You are logged In as
+            |&nbsp;
+            a(href= userData.external_urls.spotify)= userData.display_name
 
-  if message
-    p #{message}
-  else
-    p Welcome to #{title}
+
+    if message
+        p= message
