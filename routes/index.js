@@ -1,6 +1,6 @@
 const express = require('express');
 const config = require('../config')
-const {getProfile} = require("../services/spotify_api");
+const spotify = require("../services/spotify_api");
 const router = express.Router();
 
 /* GET home page. */
@@ -9,13 +9,14 @@ router.get('/', async function (req, res, next) {
     const accessToken = req.cookies[config.SPOTIFY_ACCESS_TOKEN]
     const refreshToken = req.cookies[config.SPOTIFY_REFRESH_TOKEN]
 
-    const userData = await getProfile(accessToken)
+    const userData = await spotify.getProfile(accessToken)
 
     if (!accessToken || !refreshToken || userData.error) {
-        res.render('index', {title: config.TITLE, userData: false, message: 'not logged in'});
+        res.render('index', {title: config.TITLE, userData: false, message: "not logged in"});
         return
     }
 
+    const tracksData = await spotify.getTracks(accessToken)
 
     /*
     //const tokenData = await getRefreshToken(refreshToken)
@@ -34,7 +35,7 @@ router.get('/', async function (req, res, next) {
      */
 
 
-    res.render('index', {title: config.TITLE, userData: userData,});
+    res.render('index', {title: config.TITLE, userData: userData, message: tracksData});
 
 });
 

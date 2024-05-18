@@ -20,7 +20,7 @@ router.get('/logout',function (req,res,next){
 
 })
 router.get('/', function (req, res, next) {
-    const scope = 'user-read-email';
+    const scope = 'user-read-email user-library-read';
 
     res.redirect('https://accounts.spotify.com/authorize?' +
         querystring.stringify({

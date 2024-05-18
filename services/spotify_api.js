@@ -58,5 +58,16 @@ async function getProfile(accessToken) {
     return await response.json();
 
 }
+async function getTracks(accessToken) {
 
-module.exports = {getToken, getRefreshToken,getProfile}
+    const response = await fetch('https://api.spotify.com/v1/me/tracks', {
+        headers: {
+            Authorization: 'Bearer ' + accessToken
+        }
+    });
+
+    return await response.json();
+
+}
+
+module.exports = {getToken, getRefreshToken,getProfile,getTracks}
