@@ -1,0 +1,14 @@
+extends layout
+
+block content
+  h1= title
+
+  if loggedIn
+    p You are logged In
+  else
+    a(href= "/login") Login
+
+  if message
+    p #{message}
+  else
+    p Welcome to #{title}
