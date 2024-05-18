@@ -6,6 +6,19 @@ const {getToken} = require("../services/spotify_api");
 const router = express.Router();
 
 /* GET home page. */
+
+router.get('/logout',function (req,res,next){
+
+    // todo actually logging out of spotify the app
+
+    // reset code as cookie
+    res.cookie(SPOTIFY_ACCESS_TOKEN, undefined)
+    res.cookie(SPOTIFY_REFRESH_TOKEN, undefined)
+
+    // redirect to index
+    res.redirect('/')
+
+})
 router.get('/', function (req, res, next) {
     const scope = 'user-read-email';
 
