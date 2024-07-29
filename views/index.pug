@@ -10,7 +10,13 @@ block content
             | &nbsp;
             a(href= userData.external_urls.spotify)= userData.display_name
 
-        a(href= "/login/logout") Logout
+        p
+            a(href= "/login/logout") Logout
+        p
+            form(action="/actions/update-liked-songs-playlist" method= "post")
+                button Lieblings-Song-Playlist Aktualisieren
+
+
 
     if message
         p #{ typeof message == 'string' ? message : JSON.stringify(message).replaceAll("\\", "")}

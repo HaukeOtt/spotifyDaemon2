@@ -5,7 +5,8 @@ const redirectUrl = '/login/callback';
 
 const SPOTIFY_ACCESS_TOKEN = 'sat'
 const SPOTIFY_REFRESH_TOKEN = 'srt'
+const LIKED_SONGS_PLAYLIST_ID = 'liked_songs_playlist_id'
 
 const TITLE = 'Spotify Daemon'
 
-module.exports = {clientId, clientSecret, redirectUri: redirectUrl, SPOTIFY_ACCESS_TOKEN,SPOTIFY_REFRESH_TOKEN, baseUrl,TITLE}
+module.exports = {clientId, clientSecret, redirectUri: redirectUrl, SPOTIFY_ACCESS_TOKEN,SPOTIFY_REFRESH_TOKEN, baseUrl,TITLE,LIKED_SONGS_PLAYLIST_ID}

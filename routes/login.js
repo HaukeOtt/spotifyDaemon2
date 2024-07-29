@@ -13,15 +13,18 @@ router.get('/logout',function (req,res,next){
 
     // reset code as cookie
     res.cookie(SPOTIFY_ACCESS_TOKEN, undefined)
+    req.cookies[SPOTIFY_ACCESS_TOKEN] = undefined
     res.cookie(SPOTIFY_REFRESH_TOKEN, undefined)
+    req.cookies[SPOTIFY_REFRESH_TOKEN] = undefined
 
     // redirect to index
     res.redirect('/')
 
 })
 router.get('/', function (req, res, next) {
-    const scope = 'user-read-email user-library-read';
+    const scope = 'user-read-email user-library-read playlist-modify-public playlist-modify-private';
 
+    console.log('login')
     res.redirect('https://accounts.spotify.com/authorize?' +
         querystring.stringify({
             response_type: 'code',
@@ -37,6 +40,7 @@ router.get('/callback', async function (req, res, next) {
     const tokenData = await getToken(code)
 
     if (tokenData.error) {
+        console.error('login error:',tokenData.error)
 
         const message = "login failed: invalid login code"
         res.redirect('/error?' + querystring.stringify({message}))
@@ -45,7 +49,9 @@ router.get('/callback', async function (req, res, next) {
 
     // store token as cookie
     res.cookie(SPOTIFY_ACCESS_TOKEN, tokenData.access_token)
+    req.cookies[SPOTIFY_ACCESS_TOKEN]= tokenData.access_token
     res.cookie(SPOTIFY_REFRESH_TOKEN, tokenData.refresh_token)
+    req.cookies[SPOTIFY_REFRESH_TOKEN]= tokenData.refresh_token
 
     // redirect to index
     res.redirect('/')
