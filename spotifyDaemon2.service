@@ -1,13 +1,13 @@
 [Unit]
-Description=spotify deamon 2
+Description=spotify daemon 2
 
 [Service]
-ExecStart=/home/pi/spotifyDemon2/bin/www.js
+ExecStart=/home/pi/spotifyDaemon2/bin/www.js
 Restart=always
 User=root
 # Note Debian/Ubuntu uses 'nogroup', RHEL/Fedora uses 'nobody'
 Group=nogroup
-WorkingDirectory=/home/pi/spotifyDemon2
+WorkingDirectory=/home/pi/spotifyDaemon2
 
 [Install]
 # Note multi-user.target means that the service should run when the system is running also if no user is currently connected
