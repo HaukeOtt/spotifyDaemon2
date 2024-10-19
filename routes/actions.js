@@ -6,7 +6,26 @@ const {urlencoded} = require("express");
 const {SPOTIFY_ACCESS_TOKEN, LIKED_SONGS_PLAYLIST_ID} = require("../config");
 const router = express.Router();
 
-/* GET users listing. */
+
+router.post('/lab', async function (req, res, next) {
+    const accessToken = typeof req.cookies[config.SPOTIFY_ACCESS_TOKEN] == "string" ? req.cookies[config.SPOTIFY_ACCESS_TOKEN] : null
+    const refreshToken = typeof req.cookies[config.SPOTIFY_REFRESH_TOKEN] == "string" ? req.cookies[config.SPOTIFY_REFRESH_TOKEN] : null
+    let playlistId = typeof req.cookies[config.LIKED_SONGS_PLAYLIST_ID] == "string" ? req.cookies[config.LIKED_SONGS_PLAYLIST_ID] : null
+
+    const userData = await spotify.getProfile(accessToken)
+    let userPlaylists = await spotify.getUserPlaylists(accessToken,userData.id)
+    console.log('user playlists:', userPlaylists.items.map(item=>item.name))
+
+    let myPlaylists = await spotify.getPlaylists(accessToken)
+    console.log('my playlists:', myPlaylists.items.map(item=>item.name))
+
+    const message = undefined
+    res.redirect(url.format({
+        pathname: '/',
+        query: {message}
+    }))
+})
+
 router.post('/update-liked-songs-playlist', async function (req, res, next) {
     const accessToken = typeof req.cookies[config.SPOTIFY_ACCESS_TOKEN] == "string" ? req.cookies[config.SPOTIFY_ACCESS_TOKEN] : null
     const refreshToken = typeof req.cookies[config.SPOTIFY_REFRESH_TOKEN] == "string" ? req.cookies[config.SPOTIFY_REFRESH_TOKEN] : null

@@ -1,7 +1,6 @@
-
 const clientId = '00fdfc4d12074c93a21db2600fb438d4';
 const clientSecret = 'e5ed8bf8049647d5b40c298107524161'
-const baseUrl = 'http://192.168.2.129:8080'
+onst baseUrl = 'http://localhost:3000'
 const redirectUrl = '/login/callback';
 
 const SPOTIFY_ACCESS_TOKEN = 'sat'
