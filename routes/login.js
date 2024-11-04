@@ -23,8 +23,9 @@ router.get('/logout',function (req,res,next){
 })
 router.get('/', function (req, res, next) {
     const scope = 'user-read-email user-library-read playlist-modify-public playlist-modify-private';
-
+    const redirect_uri = `${config.baseUrl}/login/callback`
     console.log('login')
+    console.log('redirect_uri:', redirect_uri)
     res.redirect('https://accounts.spotify.com/authorize?' +
         querystring.stringify({
             response_type: 'code',
