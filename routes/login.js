@@ -31,7 +31,7 @@ router.get('/', function (req, res, next) {
             response_type: 'code',
             client_id: config.clientId,
             scope: scope,
-            redirect_uri: config.baseUrl + config.redirectUri,
+            redirect_uri: redirect_uri,
         }));
 
 });
