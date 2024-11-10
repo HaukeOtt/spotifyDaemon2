@@ -5,7 +5,7 @@ const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const querystring = require('querystring');
 const session = require('express-session');
-const { SCOPE, LOGIN_REDIRECT_URI, baseUrl, clientId, clientSecret } = require('./config');
+const config = require('./config');
 
 const middleware = require('./middleware')
 

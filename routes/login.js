@@ -2,7 +2,6 @@ const express = require('express');
 const config = require('../config')
 const router = express.Router();
 const querystring = require('querystring');
-const { log } = require('console');
 
 // Route to start the Spotify authentication flow
 router.get('/', (req, res) => {
@@ -10,7 +9,7 @@ router.get('/', (req, res) => {
 
     const params = querystring.stringify({
         response_type: 'code',
-        client_id: config.clientId,
+        client_id: config.CLIENT_ID,
         scope: config.SCOPE,
         redirect_uri: config.LOGIN_REDIRECT_URI,
         state: encodeURIComponent(redirectTo), // Use 'state' to store redirect URL
@@ -42,8 +41,8 @@ router.get('/callback', async (req, res) => {
                 grant_type: 'authorization_code',
                 code: code,
                 redirect_uri: config.LOGIN_REDIRECT_URI,
-                client_id: config.clientId,
-                client_secret: config.clientSecret,
+                client_id: config.CLIENT_ID,
+                client_secret: config.CLIENT_SECRET,
             }),
             {
                 method: 'post',
