@@ -14,7 +14,6 @@ const loginRouter = require('./routes/login');
 const actionsRouter = require('./routes/actions');
 const errorRouter = require('./routes/error');
 const getRefreshToken = require("./routes/refreshAccessToken");
-const { log } = require('console');
 
 const app = express();
 
@@ -25,6 +24,7 @@ app.set('view engine', 'pug');
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(cookieParser())
 
 // Use session to store access tokens securely
 app.use(session({
