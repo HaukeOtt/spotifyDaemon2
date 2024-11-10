@@ -3,12 +3,18 @@ const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
+const querystring = require('querystring');
+const session = require('express-session');
+const { SCOPE, LOGIN_REDIRECT_URI, baseUrl, clientId, clientSecret } = require('./config');
+
+const middleware = require('./middleware')
 
 const indexRouter = require('./routes/index');
 const loginRouter = require('./routes/login');
 const actionsRouter = require('./routes/actions');
 const errorRouter = require('./routes/error');
 const getRefreshToken = require("./routes/refreshAccessToken");
+const { log } = require('console');
 
 const app = express();
 
@@ -18,13 +24,24 @@ app.set('view engine', 'pug');
 
 app.use(logger('dev'));
 app.use(express.json());
-app.use(express.urlencoded({extended: false}));
-app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+// Use session to store access tokens securely
+app.use(session({
+    secret: 'your_secret_key',
+    resave: false,
+    saveUninitialized: true,
+    cookie: { secure: false } // Set to true if using HTTPS
+}));
+
+// unauthenticated routes
 app.use('/error', errorRouter);
-app.use('/login', loginRouter);
-app.use('/',getRefreshToken, indexRouter);
+app.use('/login',loginRouter)
+
+// authenticate
+
+// authenticated routes
+app.use('/',middleware.checkAuth,middleware.refreshToken, indexRouter);
 app.use('/actions', actionsRouter);
 
 // catch 404 and forward to error handler
@@ -44,5 +61,3 @@ app.use(function (err, req, res, next) {
 });
 
 module.exports = app;
-
-

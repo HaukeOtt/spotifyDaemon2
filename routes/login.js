@@ -1,61 +1,74 @@
 const express = require('express');
-const config = require('../config');
-const querystring = require('querystring');
-const {SPOTIFY_ACCESS_TOKEN, SPOTIFY_REFRESH_TOKEN} = require("../config");
-const {getToken} = require("../services/spotify_api");
+const config = require('../config')
 const router = express.Router();
+const querystring = require('querystring');
+const { log } = require('console');
 
-/* GET home page. */
+// Route to start the Spotify authentication flow
+router.get('/', (req, res) => {
+    const redirectTo = req.query.redirect || '/'; // Default redirect if none provided
 
-router.get('/logout',function (req,res,next){
+    const params = querystring.stringify({
+        response_type: 'code',
+        client_id: config.clientId,
+        scope: config.SCOPE,
+        redirect_uri: config.LOGIN_REDIRECT_URI,
+        state: encodeURIComponent(redirectTo), // Use 'state' to store redirect URL
+    });
 
-    // todo actually logging out of spotify the app
+    console.log('redirect to spotify:',params);
 
-    // reset code as cookie
-    res.cookie(SPOTIFY_ACCESS_TOKEN, undefined)
-    req.cookies[SPOTIFY_ACCESS_TOKEN] = undefined
-    res.cookie(SPOTIFY_REFRESH_TOKEN, undefined)
-    req.cookies[SPOTIFY_REFRESH_TOKEN] = undefined
-
-    // redirect to index
-    res.redirect('/')
-
-})
-router.get('/', function (req, res, next) {
-    const scope = 'user-read-email user-library-read playlist-modify-public playlist-modify-private';
-    const redirect_uri = `${config.baseUrl}/login/callback`
-    console.log('login')
-    console.log('redirect_uri:', redirect_uri)
-    res.redirect('https://accounts.spotify.com/authorize?' +
-        querystring.stringify({
-            response_type: 'code',
-            client_id: config.clientId,
-            scope: scope,
-            redirect_uri: redirect_uri,
-        }));
-
+    // Redirect user to Spotify's authorization page
+    res.redirect(`https://accounts.spotify.com/authorize?${params}`);
 });
-router.get('/callback', async function (req, res, next) {
-    const code = req.query.code || '';
 
-    const tokenData = await getToken(code)
+// Callback route to handle Spotify's response
+router.get('/callback', async (req, res) => {
 
-    if (tokenData.error) {
-        console.error('login error:',tokenData.error)
+    console.log('login callback')
 
-        const message = "login failed: invalid login code"
-        res.redirect('/error?' + querystring.stringify({message}))
-        return
+    const code = req.query.code || null;
+    const state = decodeURIComponent(req.query.state) || '/'; // Retrieve the original redirect URL
+
+    if (!code) {
+        return res.status(400).send('Authorization code is missing');
     }
 
-    // store token as cookie
-    res.cookie(SPOTIFY_ACCESS_TOKEN, tokenData.access_token)
-    req.cookies[SPOTIFY_ACCESS_TOKEN]= tokenData.access_token
-    res.cookie(SPOTIFY_REFRESH_TOKEN, tokenData.refresh_token)
-    req.cookies[SPOTIFY_REFRESH_TOKEN]= tokenData.refresh_token
+    try {
 
-    // redirect to index
-    res.redirect('/')
+        // Exchange authorization code for access token
+        const response = await fetch(
+            'https://accounts.spotify.com/api/token?' + querystring.stringify({
+                grant_type: 'authorization_code',
+                code: code,
+                redirect_uri: config.LOGIN_REDIRECT_URI,
+                client_id: config.clientId,
+                client_secret: config.clientSecret,
+            }),
+            {
+                method: 'post',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+            },
+        );
+
+        const responseData = await response.json()
+        if (responseData['error']){
+            throw response
+        }
+        
+        const { access_token, refresh_token, expires_in } = responseData
+
+        // Store tokens in session
+        req.session.access_token = access_token;
+        req.session.refresh_token = refresh_token;
+        req.session.expires_at = Date.now() + expires_in * 1000; // Store token expiry time
+
+        // Redirect to the originally intended route
+        res.redirect('..'+state);
+    } catch (error) {
+        console.error(error.response ? error.response.data : error.message);
+        res.status(500).send('Authentication failed');
+    }
 });
 
-module.exports = router;
+module.exports = router
