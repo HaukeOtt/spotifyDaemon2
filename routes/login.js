@@ -52,7 +52,7 @@ router.get('/callback', async (req, res) => {
 
         const responseData = await response.json()
         if (responseData['error']){
-            throw response
+            throw responseData
         }
         
         const { access_token, refresh_token, expires_in } = responseData
@@ -65,7 +65,7 @@ router.get('/callback', async (req, res) => {
         // Redirect to the originally intended route
         res.redirect('..'+state);
     } catch (error) {
-        console.error(error.response ? error.response.data : error.message);
+        console.error(error);
         res.status(500).send('Authentication failed');
     }
 });
