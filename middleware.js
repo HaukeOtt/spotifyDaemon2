@@ -1,7 +1,7 @@
 // Middleware to check for authentication
 function checkAuth(req, res, next) {
-    console.log('req.session.access_token:',req.session.access_token);
-    
+    console.log('req.session.access_token:', req.session.access_token);
+
     if (req.session.access_token) {
         next();
     } else {
@@ -14,7 +14,7 @@ function checkAuth(req, res, next) {
 
 // Middleware to refresh the access token if expired
 async function refreshToken(req, res, next) {
-    console.log('refresh access_token',Date.now() > req.session.expires_at);
+    console.log('refresh access_token', Date.now() > req.session.expires_at);
 
     if (Date.now() > req.session.expires_at) {
         try {
@@ -29,10 +29,11 @@ async function refreshToken(req, res, next) {
                 { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }
             );
 
-            const { access_token, expires_in } = response.data;
+            const { access_token, refresh_token, expires_in } = response.data;
 
             // Update session with new access token and expiry
             req.session.access_token = access_token;
+            req.session.refresh_token = refresh_token
             req.session.expires_at = Date.now() + expires_in * 1000;
 
             next();
@@ -45,4 +46,4 @@ async function refreshToken(req, res, next) {
     }
 }
 
-module.exports = {refreshToken,checkAuth}
+module.exports = { refreshToken, checkAuth }
